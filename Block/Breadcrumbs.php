@@ -68,7 +68,7 @@ class Breadcrumbs extends \Magento\Framework\View\Element\Template
 			if ($product && count($path) == 1) {
 					$categoryCollection = clone $product->getCategoryCollection();
 					$categoryCollection->clear();
-					$categoryCollection->addAttributeToSort('level', $categoryCollection::SORT_ORDER_DESC);
+					$categoryCollection->addAttributeToSort('level', $categoryCollection::SORT_ORDER_DESC)->addAttributeToFilter('path', array('like' => "1/" . $this->_storeManager->getStore()->getRootCategoryId() . "/%"));
 					$categoryCollection->setPageSize(1);
 					$breadcrumbCategories = $categoryCollection->getFirstItem()->getParentCategories();
 					
