@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<page>
+    <body>
+		<referenceBlock name="breadcrumbs" remove="true" />
+		<referenceContainer name="page.top">
+			<block class="Harrigo\EverCrumbs\Block\Evercrumbs" name="evercrumbs" as="evercrumbs" template="Harrigo_EverCrumbs::evercrumbs.phtml" />
+		</referenceContainer>
+    </body>
+</page>
