@@ -1,14 +1,20 @@
 <?php $crumbs = $block->getCrumbs(); ?>
 <?php if ($crumbs && is_array($crumbs)) : ?>
+<?php $i = 0; ?>
 <div class="breadcrumbs">
-    <ul class="items">
+    <ul class="items" itemscope itemtype="http://schema.org/BreadcrumbList">
         <?php foreach ($crumbs as $crumbName => $crumbInfo) : ?>
-            <li class="item <?= /* @escapeNotVerified */ $crumbName ?>">
+            <?php $i++; ?>
+            <li class="item <?= /* @escapeNotVerified */ $crumbName ?>" itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
             <?php if ($crumbInfo['link']) : ?>
-                <a href="<?= /* @escapeNotVerified */ $crumbInfo['link'] ?>" title="<?= $block->escapeHtml($crumbInfo['title']) ?>"><?= $block->escapeHtml($crumbInfo['label']) ?></a>
+                <a itemprop="item" href="<?= /* @escapeNotVerified */ $crumbInfo['link'] ?>" title="<?= $block->escapeHtml($crumbInfo['title']) ?>">
+                  <span itemprop="name"><?= $block->escapeHtml($crumbInfo['label']) ?></span>
+                </a>
             <?php else: ?>
-                <?= $block->escapeHtml($crumbInfo['label']) ?>
+				<span itemprop="name"><?= $block->escapeHtml($crumbInfo['label']) ?></span>
+                <meta itemprop="item" content="<?= /* @escapeNotVerified */ $this->getUrl('*/*/*', ['_current' => true, '_use_rewrite' => true]) ?>" />
             <?php endif; ?>
+                <meta itemprop="position" content="<?= $i ?>" />
             </li>
         <?php endforeach; ?>
     </ul>
