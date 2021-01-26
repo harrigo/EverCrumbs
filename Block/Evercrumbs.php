@@ -45,6 +45,9 @@ class Evercrumbs extends Template
             ->setPageSize(1);
 
         $breadcrumbCategories = $categoryCollection->getFirstItem()->getParentCategories();
+        usort($breadcrumbCategories, function ($a, $b) {
+            return strcmp($a->getLevel(), $b->getLevel());
+        });
         foreach ($breadcrumbCategories as $category) {
             $crumbs[] = [
                 'label' => $category->getName(),
