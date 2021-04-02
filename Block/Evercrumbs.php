@@ -1,69 +1,67 @@
 <?php
+
 namespace Harrigo\EverCrumbs\Block;
 
 use Magento\Catalog\Helper\Data;
-use Magento\Framework\View\Element\Template\Context;
-use Magento\Store\Model\Store;
 use Magento\Framework\Registry;
+use Magento\Framework\View\Element\Template;
+use Magento\Framework\View\Element\Template\Context;
 
-class Evercrumbs extends \Magento\Framework\View\Element\Template
+class Evercrumbs extends Template
 {
+    protected ?Data $catalogData = null;
+    private Registry $registry;
 
-    /**
-     * Catalog data
-     *
-     * @var Data
-     */
-    protected $_catalogData = null;
-
-    /**
-     * @param Context $context
-     * @param Data $catalogData
-     * @param array $data
-     */
     public function __construct(
-		Context $context, 
-		Data $catalogData, 
-		Registry $registry,
-		array $data = [])
-    {
-        $this->_catalogData = $catalogData;	
-		$this->registry = $registry;
+        Context $context,
+        Data $catalogData,
+        Registry $registry,
+        array $data = []
+    ) {
+        $this->catalogData = $catalogData;
+        $this->registry = $registry;
         parent::__construct($context, $data);
     }
 
-	public function getCrumbs()
+    private function getRootCategoryId(): int
     {
-		$evercrumbs = array();
-		
-		$evercrumbs[] = array(
-			'label' => 'Home',
-			'title' => 'Go to Home Page',
-			'link' => $this->_storeManager->getStore()->getBaseUrl()
-		);
+        return (int) $this->_storeManager->getStore()->getRootCategoryId();
+    }
 
-		$path = $this->_catalogData->getBreadcrumbPath();
-		$product = $this->registry->registry('current_product');
-		$categoryCollection = clone $product->getCategoryCollection();
-		$categoryCollection->clear();
-		$categoryCollection->addAttributeToSort('level', $categoryCollection::SORT_ORDER_DESC)->addAttributeToFilter('path', array('like' => "1/" . $this->_storeManager->getStore()->getRootCategoryId() . "/%"));
-		$categoryCollection->setPageSize(1);
-		$breadcrumbCategories = $categoryCollection->getFirstItem()->getParentCategories();
-		foreach ($breadcrumbCategories as $category) {
-			$evercrumbs[] = array(
-				'label' => $category->getName(),
-				'title' => $category->getName(),
-				'link' => $category->getUrl()
-			);
-		}
-	
-		
-		$evercrumbs[] = array(
-				'label' => $product->getName(),
-				'title' => $product->getName(),
-				'link' => ''
-			);
-				
-		return $evercrumbs;
+    public function getCrumbs(): array
+    {
+        $crumbs = [];
+        $crumbs[] = [
+            'label' => __('Home'),
+            'title' => __('Go to Home Page'),
+            'link' => $this->_storeManager->getStore()->getBaseUrl()
+        ];
+
+        $product = $this->registry->registry('current_product');
+        $categoryCollection = clone $product->getCategoryCollection();
+        $categoryCollection->clear()
+            ->addAttributeToSort('level', $categoryCollection::SORT_ORDER_DESC)
+            ->addAttributeToFilter('path', ['like' => "1/" . $this->getRootCategoryId() . "/%"])
+            ->setPageSize(1);
+
+        $breadcrumbCategories = $categoryCollection->getFirstItem()->getParentCategories();
+        usort($breadcrumbCategories, function ($a, $b) {
+            return strcmp($a->getLevel(), $b->getLevel());
+        });
+        foreach ($breadcrumbCategories as $category) {
+            $crumbs[] = [
+                'label' => $category->getName(),
+                'title' => $category->getName(),
+                'link'  => $category->getUrl()
+            ];
+        }
+
+        $crumbs[] = [
+            'label' => $product->getName(),
+            'title' => $product->getName(),
+            'link' => ''
+        ];
+
+        return $crumbs;
     }
 }

@@ -1,5 +1,10 @@
-<?php $crumbs = $block->getCrumbs(); ?>
-<?php if ($crumbs && is_array($crumbs)) : ?>
+<?php
+
+use Harrigo\EverCrumbs\Block\Evercrumbs;
+/** @var Evercrumbs $block */
+
+$crumbs = $block->getCrumbs(); ?>
+<?php if ($crumbs && is_array($crumbs)): ?>
 <?php $i = 0; ?>
 <div class="breadcrumbs">
     <ul class="items" itemscope itemtype="http://schema.org/BreadcrumbList">
