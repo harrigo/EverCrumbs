@@ -9,7 +9,7 @@ use Magento\Framework\View\Element\Template\Context;
 
 class Evercrumbs extends Template
 {
-    protected ?Data $catalogData = null;
+    protected Data $catalogData = null;
     private Registry $registry;
 
     public function __construct(
